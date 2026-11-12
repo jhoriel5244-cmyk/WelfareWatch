@@ -3,7 +3,7 @@
 A centralized web-based beneficiary profiling and monitoring system designed for the **Municipal Social Welfare and Development Office (MSWDO) of Boac, Marinduque**, built in compliance with **Republic Act No. 11861** (Expanded Solo Parents Welfare Act of 2022).
 
 ## Key Features
-- **Executive Dashboard:** Real-time statistics and interactive charts tracking solo parent distribution across Boac barangays and RA 11861 qualification categories.
+- **Executive Dashboard:** Real-time statistics, hover-activated MSWDO advisory ticker, and interactive charts tracking solo parent distribution across Boac barangays and RA 11861 qualification categories.
 - **Solo Parent Beneficiary Profiling:** Complete CRUD management, search, and barangay/status filtering with Role-Based Access Control (RBAC).
 - **Assistance & Aid Monitoring:** Ledger tracking financial subsidies, educational aid, and medical assistance.
 - **RA 11861 Document Validation:** Digital checklist verification for mandatory requirements before SPIC activation.
@@ -11,7 +11,7 @@ A centralized web-based beneficiary profiling and monitoring system designed for
 
 ## Technologies Used
 - HTML5
-- CSS3 (Tailwind CSS)
+- CSS3 (Tailwind CSS & Custom Keyframe Animations)
 - Vanilla JavaScript (ES6+ with LocalStorage persistence)
 - Chart.js & Font Awesome
 
@@ -19,4 +19,4 @@ A centralized web-based beneficiary profiling and monitoring system designed for
 - **Ace S. Arroyo** – Libas, Buenavista, Marinduque
 - **Jhon Gabriel B. Hilario** – Tabi, Boac, Marinduque
 - **Krisha R. Menorca** – Kamandugan, Sta. Cruz, Marinduque
-- **Lester Jaren M. Ramos** – Mahunig, Gasan, Marinduque# WelfareWatch
+- **Lester Jaren M. Ramos** – Mahunig, Gasan, Marinduque
