@@ -1,19 +1,157 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 body {
   font-family: 'Inter', sans-serif;
 }
 
+/* Smooth Tab Switch Entrance Animation */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.view-animate {
+  animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered Card Entrance */
+.stagger-1 { animation: fadeSlideUp 0.35s ease backwards 0.05s; }
+.stagger-2 { animation: fadeSlideUp 0.35s ease backwards 0.12s; }
+.stagger-3 { animation: fadeSlideUp 0.35s ease backwards 0.19s; }
+.stagger-4 { animation: fadeSlideUp 0.35s ease backwards 0.26s; }
+
+/* Modal Pop-In Animation */
+@keyframes modalZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-box {
+  animation: modalZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Gentle Floating Icon Animation */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+.float-icon {
+  animation: floatSlow 3.5s ease-in-out infinite;
+}
+
+/* Slow, Subtle Shimmer Sweep on DSWD Tri-Color Header Bar */
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.tricolor-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.tricolor-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: shimmerSweep 14s linear infinite;
+}
+
+/* Hover-to-Scroll Advisory Marquee Ticker */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.marquee-track {
+  display: inline-block;
+  animation: marqueeScroll 24s linear infinite;
+  animation-play-state: paused;
+}
+
+.marquee-container:hover .marquee-track,
+.marquee-container:active .marquee-track {
+  animation-play-state: running;
+}
+
+/* KPI Card Hover Lift */
+.kpi-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -6px rgba(40, 43, 132, 0.16), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+}
+
+/* Sidebar Nav Button Slide */
+.nav-btn:hover {
+  transform: translateX(4px);
+}
+
+.nav-btn:hover i {
+  transform: scale(1.15);
+}
+
+/* Interactive Button Press */
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-press:hover {
+  transform: translateY(-1px);
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* High-Contrast Table Row Hover */
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(40, 43, 132, 0.06) !important;
+}
+
+/* Document Validation Card Hover */
+.doc-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.doc-card:hover {
+  transform: translateY(-3px);
+  border-color: #282B84;
+  box-shadow: 0 10px 18px -5px rgba(40, 43, 132, 0.14);
+}
+
+/* Print Overrides */
 @media print {
-  .no-print {
-    display: none !important;
-  }
-  body {
-    background: #ffffff !important;
-    overflow: visible !important;
-  }
-  main {
-    overflow: visible !important;
-    padding: 0 !important;
-  }
+  .no-print { display: none !important; }
+  body { background: #ffffff !important; overflow: visible !important; }
+  main { overflow: visible !important; padding: 0 !important; }
 }
