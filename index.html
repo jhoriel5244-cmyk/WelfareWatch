@@ -1,1 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WelfareWatch | MSWDO Boac Solo Parent System</title>
+  <!-- Tailwind CSS & Chart.js CDNs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dswdNavy: '#2E3192',
+            dswdDarkNavy: '#1B1D5C',
+            dswdRed: '#EE1C25',
+            dswdYellow: '#FEF200',
+            dswdGold: '#EAB308'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased flex h-screen overflow-hidden">
 
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar" class="w-64 bg-dswdNavy text-white flex flex-col justify-between transition-all duration-300 z-20 no-print">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-5 border-b border-blue-800 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center shadow-md shrink-0">
+          <i class="fa-solid fa-hands-holding-child text-dswdNavy text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg tracking-wide leading-tight">Welfare<span class="text-dswdYellow">Watch</span></h1>
+          <p class="text-[11px] text-blue-200 uppercase tracking-wider">MSWDO Boac, Marinduque</p>
+        </div>
+      </div>
+
+      <!-- Role Badge -->
+      <div class="px-5 py-3 bg-dswdDarkNavy border-b border-blue-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse"></span>
+          <span class="text-xs font-medium text-blue-100" id="currentRoleDisplay">Role: MSWDO Admin</span>
+        </div>
+        <button onclick="toggleRole()" title="Switch RBAC Role" class="text-[10px] bg-blue-800 hover:bg-blue-700 px-2 py-0.5 rounded text-blue-200 transition">
+          Switch
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium bg-white/15 text-white border-l-4 border-dswdYellow transition">
+          <i class="fa-solid fa-chart-pie w-5 text-center text-dswdYellow"></i> Dashboard
+        </button>
+        <button onclick="switchTab('beneficiaries')" id="nav-beneficiaries" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-blue-100 hover:bg-white/10 transition">
+          <i class="fa-solid fa-users w-5 text-center"></i> Solo Parent Profiling
+        </button>
+        <button onclick="switchTab('assistance')" id="nav-assistance" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-blue-100 hover:bg-white/10 transition">
+          <i class="fa-solid fa-hand-holding-heart w-5 text-center"></i> Assistance & Aid
+        </button>
+        <button onclick="switchTab('documents')" id="nav-documents" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-blue-100 hover:bg-white/10 transition">
+          <i class="fa-solid fa-folder-open w-5 text-center"></i> Document Validation
+        </button>
+        <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-blue-100 hover:bg-white/10 transition">
+          <i class="fa-solid fa-file-contract w-5 text-center"></i> Reports & Masterlist
+        </button>
+      </nav>
+    </div>
+
+    <!-- Bottom Legal Tag -->
+    <div class="p-4 border-t border-blue-800 text-xs text-blue-200">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="px-1.5 py-0.5 bg-dswdRed text-white font-bold rounded text-[10px]">RA 11861</span>
+        <span class="font-semibold text-white">Compliant System</span>
+      </div>
+      <p class="text-[11px] opacity-75">Data Privacy Act (RA 10173) Protected</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    
+    <!-- TOP HEADER BAR -->
+    <header class="bg-white border-b border-slate-200 h-16 px-6 flex items-center justify-between shrink-0 no-print">
+      <div class="flex items-center gap-4">
+        <button onclick="document.getElementById('sidebar').classList.toggle('hidden')" class="md:hidden text-slate-600 hover:text-dswdNavy">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+        <div>
+          <h2 id="pageTitle" class="text-lg font-bold text-dswdNavy">Executive Dashboard</h2>
+          <p class="text-xs text-slate-500">Municipal Social Welfare and Development Office — Boac, Marinduque</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden sm:flex items-center gap-2 bg-blue-50 text-dswdNavy px-3 py-1.5 rounded-full text-xs font-semibold border border-blue-100">
+          <i class="fa-solid fa-calendar-check text-dswdRed"></i>
+          <span id="currentQuarterDisplay">Q4 2026 Validation Cycle</span>
+        </div>
+        <button onclick="openRegisterModal()" class="bg-dswdRed hover:bg-red-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Register Solo Parent</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- DSWD TRI-COLOR ACCENT BAR -->
+    <div class="h-1.5 w-full flex shrink-0 no-print">
+      <div class="w-1/2 bg-dswdNavy"></div>
+      <div class="w-1/3 bg-dswdRed"></div>
+      <div class="w-1/6 bg-dswdYellow"></div>
+    </div>
+
+    <!-- DYNAMIC VIEWPORT -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section id="view-dashboard" class="space-y-6">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-dswdNavy">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-semibold text-slate-500 uppercase">Total Registered</p>
+                <h3 id="stat-total" class="text-3xl font-extrabold text-dswdNavy mt-1">0</h3>
+              </div>
+              <div class="p-2.5 bg-blue-50 text-dswdNavy rounded-lg">
+                <i class="fa-solid fa-users text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3"><span class="text-emerald-600 font-semibold">+12%</span> from last quarter</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-semibold text-slate-500 uppercase">Active SPIC Holders</p>
+                <h3 id="stat-active" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
+              </div>
+              <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg">
+                <i class="fa-solid fa-id-card text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">Verified under RA 11861</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-dswdRed">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-semibold text-slate-500 uppercase">For Renewal / Pending</p>
+                <h3 id="stat-pending" class="text-3xl font-extrabold text-dswdRed mt-1">0</h3>
+              </div>
+              <div class="p-2.5 bg-red-50 text-dswdRed rounded-lg">
+                <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">Requires document validation</p>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-dswdGold">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-semibold text-slate-500 uppercase">Total Assistance Disbursed</p>
+                <h3 id="stat-aid" class="text-3xl font-extrabold text-slate-800 mt-1">₱0</h3>
+              </div>
+              <div class="p-2.5 bg-yellow-50 text-dswdGold rounded-lg">
+                <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">Municipal & DSWD Subsidies</p>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h4 class="font-bold text-dswdNavy">Solo Parent Distribution by Barangay (Boac)</h4>
+                <p class="text-xs text-slate-500">Top barangays with highest registered solo parent households</p>
+              </div>
+              <span class="text-xs bg-blue-50 text-dswdNavy px-2.5 py-1 rounded font-semibold">Live Registry</span>
+            </div>
+            <div class="h-64">
+              <canvas id="barangayChart"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="mb-4">
+              <h4 class="font-bold text-dswdNavy">RA 11861 Categories</h4>
+              <p class="text-xs text-slate-500">Breakdown by statutory qualification</p>
+            </div>
+            <div class="h-64 flex items-center justify-center">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <h4 class="font-bold text-dswdNavy text-sm">Recent Beneficiary Registrations & Updates</h4>
+            <button onclick="switchTab('beneficiaries')" class="text-xs font-semibold text-dswdRed hover:underline">View All Records &rarr;</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs uppercase border-b border-slate-200">
+                  <th class="py-3 px-4">SPIC No.</th>
+                  <th class="py-3 px-4">Full Name</th>
+                  <th class="py-3 px-4">Barangay</th>
+                  <th class="py-3 px-4">Dependents</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="recentTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. BENEFICIARY PROFILING VIEW -->
+      <section id="view-beneficiaries" class="hidden space-y-5">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-search absolute left-3.5 top-3 text-slate-400"></i>
+            <input type="text" id="searchInput" onkeyup="renderBeneficiaryTable()" placeholder="Search by Name, SPIC ID, or Contact..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-dswdNavy" />
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <select id="filterBarangay" onchange="renderBeneficiaryTable()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-dswdNavy">
+              <option value="">All Barangays (Boac)</option>
+              <option value="Tabi">Tabi</option>
+              <option value="Murallon">Murallon</option>
+              <option value="Mercado">Mercado</option>
+              <option value="Isok I">Isok I</option>
+              <option value="Tampus">Tampus</option>
+              <option value="Santol">Santol</option>
+              <option value="Laylay">Laylay</option>
+              <option value="Balimbing">Balimbing</option>
+            </select>
+            <select id="filterStatus" onchange="renderBeneficiaryTable()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-dswdNavy">
+              <option value="">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Pending Validation">Pending Validation</option>
+              <option value="For Renewal">For Renewal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-dswdNavy text-white text-xs uppercase">
+                  <th class="py-3.5 px-4">SPIC Number</th>
+                  <th class="py-3.5 px-4">Solo Parent Name</th>
+                  <th class="py-3.5 px-4">Barangay</th>
+                  <th class="py-3.5 px-4">Qualification Category</th>
+                  <th class="py-3.5 px-4 text-center">Dependents</th>
+                  <th class="py-3.5 px-4">Monthly Income</th>
+                  <th class="py-3.5 px-4">Status</th>
+                  <th class="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="beneficiaryTableBody" class="divide-y divide-slate-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ASSISTANCE & AID MONITORING VIEW -->
+      <section id="view-assistance" class="hidden space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div>
+            <h3 class="font-bold text-dswdNavy text-base">Assistance & Interventions Ledger</h3>
+            <p class="text-xs text-slate-500">Track financial subsidies, educational aid, and medical assistance distributed to solo parents</p>
+          </div>
+          <button onclick="openAidModal()" class="bg-dswdNavy hover:bg-dswdDarkNavy text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition shrink-0">
+            <i class="fa-solid fa-plus-circle"></i> Log New Assistance
+          </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
+                  <th class="py-3.5 px-4">Date Released</th>
+                  <th class="py-3.5 px-4">Beneficiary Name</th>
+                  <th class="py-3.5 px-4">SPIC ID</th>
+                  <th class="py-3.5 px-4">Assistance Type</th>
+                  <th class="py-3.5 px-4">Amount / Value</th>
+                  <th class="py-3.5 px-4">Remarks / Source</th>
+                </tr>
+              </thead>
+              <tbody id="assistanceTableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. DOCUMENT VALIDATION VIEW -->
+      <section id="view-documents" class="hidden space-y-5">
+        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl flex items-start gap-3">
+          <i class="fa-solid fa-circle-info text-dswdNavy mt-0.5"></i>
+          <div class="text-xs text-slate-700">
+            <p class="font-bold text-dswdNavy">RA 11861 Documentary Checklist Verification</p>
+            <p class="mt-0.5">Verify submitted requirements (Barangay Certificate of Solo Parent, Affidavit of Solo Parent, PSA Birth Certificates of Dependents, and Income Tax Return/Certificate of Indigency) before activating SPIC status.</p>
+          </div>
+        </div>
+
+        <div id="documentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+      </section>
+
+      <!-- 5. REPORTS & MASTERLIST VIEW -->
+      <section id="view-reports" class="hidden space-y-5">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4 no-print">
+          <div>
+            <h3 class="font-bold text-dswdNavy text-base">Quarterly Masterlist & Statistical Report</h3>
+            <p class="text-xs text-slate-500">Mandated quarterly submission format for DSWD Field Office MIMAROPA & LGU Boac</p>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="exportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+            <button onclick="window.print()" class="bg-dswdNavy hover:bg-dswdDarkNavy text-white text-sm font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition">
+              <i class="fa-solid fa-print"></i> Print Official Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Printable Report Paper -->
+        <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
+          <div class="text-center border-b-2 border-dswdNavy pb-4 mb-6">
+            <p class="text-xs uppercase tracking-widest text-slate-500">Republic of the Philippines • Province of Marinduque</p>
+            <h2 class="text-xl font-extrabold text-dswdNavy uppercase mt-1">Municipality of Boac</h2>
+            <p class="text-sm font-bold text-dswdRed">Municipal Social Welfare and Development Office (MSWDO)</p>
+            <p class="text-xs text-slate-600 mt-1">QUARTERLY MASTERLIST OF REGISTERED SOLO PARENTS (RA 11861)</p>
+          </div>
+
+          <table class="w-full text-left border-collapse text-xs border border-slate-300">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-300">
+                <th class="p-2 border border-slate-300">#</th>
+                <th class="p-2 border border-slate-300">SPIC ID</th>
+                <th class="p-2 border border-slate-300">Full Name</th>
+                <th class="p-2 border border-slate-300">Barangay</th>
+                <th class="p-2 border border-slate-300">Category</th>
+                <th class="p-2 border border-slate-300 text-center">Dependents</th>
+                <th class="p-2 border border-slate-300">Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody"></tbody>
+          </table>
+
+          <div class="mt-10 grid grid-cols-2 gap-8 text-xs pt-6">
+            <div>
+              <p class="text-slate-500">Prepared by:</p>
+              <div class="mt-8 border-b border-slate-400 w-56 font-bold text-slate-800">MSWDO Solo Parent Focal Person</div>
+              <p class="text-slate-500 mt-1">Social Welfare Officer II, Boac Marinduque</p>
+            </div>
+            <div>
+              <p class="text-slate-500">Noted & Approved by:</p>
+              <div class="mt-8 border-b border-slate-400 w-56 font-bold text-slate-800">Municipal Social Welfare Officer</div>
+              <p class="text-slate-500 mt-1">MSWDO Department Head, Boac Marinduque</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL 1: REGISTER / EDIT SOLO PARENT -->
+  <div id="registerModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden animate-fade-in">
+      <div class="bg-dswdNavy text-white px-6 py-4 flex justify-between items-center">
+        <h3 id="modalTitle" class="font-bold text-base">Register New Solo Parent Beneficiary</h3>
+        <button onclick="closeModal('registerModal')" class="text-blue-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="soloParentForm" onsubmit="saveBeneficiary(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto text-sm">
+        <input type="hidden" id="editId" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Full Name *</label>
+            <input type="text" id="spName" required placeholder="e.g., Maria Clara Santos" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-dswdNavy" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Barangay (Boac) *</label>
+            <select id="spBarangay" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">
+              <option value="Tabi">Tabi</option>
+              <option value="Murallon">Murallon</option>
+              <option value="Mercado">Mercado</option>
+              <option value="Isok I">Isok I</option>
+              <option value="Tampus">Tampus</option>
+              <option value="Santol">Santol</option>
+              <option value="Laylay">Laylay</option>
+              <option value="Balimbing">Balimbing</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">RA 11861 Qualification Category *</label>
+            <select id="spCategory" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">
+              <option value="Unmarried Parent">Unmarried Parent (Solo Custody)</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Separated / Annulled">Legally Separated / Annulled</option>
+              <option value="Abandoned">Abandoned by Spouse (>6 mos)</option>
+              <option value="Spouse Detained">Spouse Detained / Convicted</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Number of Qualified Dependents *</label>
+            <input type="number" id="spDependents" min="1" max="15" value="1" required class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Monthly Income (PHP) *</label>
+            <input type="number" id="spIncome" min="0" value="8000" required class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Contact Number *</label>
+            <input type="text" id="spContact" required placeholder="09XX-XXX-XXXX" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div class="border-t border-slate-200 pt-3">
+          <label class="block font-semibold text-slate-700 mb-2">Submitted Requirements Checklist:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2"><input type="checkbox" id="docBrgy" checked class="accent-dswdNavy" /> Barangay Solo Parent Certificate</label>
+            <label class="flex items-center gap-2"><input type="checkbox" id="docAffidavit" checked class="accent-dswdNavy" /> Sworn Affidavit of Solo Parent</label>
+            <label class="flex items-center gap-2"><input type="checkbox" id="docBirth" checked class="accent-dswdNavy" /> PSA Birth Certificate(s) of Child</label>
+            <label class="flex items-center gap-2"><input type="checkbox" id="docIncome" class="accent-dswdNavy" /> Cert. of Indigency / Income Proof</label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <button type="button" onclick="closeModal('registerModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-dswdNavy hover:bg-dswdDarkNavy text-white font-semibold rounded-lg">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: LOG ASSISTANCE -->
+  <div id="aidModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+      <div class="bg-dswdNavy text-white px-6 py-4 flex justify-between items-center">
+        <h3 class="font-bold text-base">Log Assistance / Subsidy</h3>
+        <button onclick="closeModal('aidModal')" class="text-blue-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="saveAssistance(event)" class="p-6 space-y-4 text-sm">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Select Solo Parent Beneficiary *</label>
+          <select id="aidBeneficiary" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white"></select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Assistance Program Type *</label>
+          <select id="aidType" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">
+            <option value="Monthly Cash Subsidy (RA 11861)">Monthly Cash Subsidy (₱1,000)</option>
+            <option value="Educational Assistance">Educational Assistance (School Supplies/Cash)</option>
+            <option value="Medical / Hospitalization Aid">Medical / Hospitalization Aid (AICS)</option>
+            <option value="Livelihood Starter Kit">Livelihood Starter Kit (SLP)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Amount / Estimated Value (PHP) *</label>
+          <input type="number" id="aidAmount" value="1000" min="100" required class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Remarks / Funding Source</label>
+          <input type="text" id="aidRemarks" placeholder="e.g., LGU Boac Q4 Allocation" required class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+        <div class="flex justify-end gap-3 pt-3">
+          <button type="button" onclick="closeModal('aidModal')" class="px-4 py-2 border border-slate-300 rounded-lg">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-dswdRed hover:bg-red-700 text-white font-semibold rounded-lg">Record Disbursement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SPIC ID PREVIEW -->
+  <div id="spicModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+      <div class="bg-slate-800 text-white px-5 py-3 flex justify-between items-center no-print">
+        <span class="text-sm font-bold"><i class="fa-solid fa-id-card mr-2 text-dswdYellow"></i>Solo Parent ID Card (SPIC)</span>
+        <button onclick="closeModal('spicModal')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 flex flex-col items-center">
+        <!-- ID CARD FRONT -->
+        <div class="w-full max-w-sm rounded-xl overflow-hidden border-2 border-dswdNavy shadow-lg bg-gradient-to-br from-white to-blue-50">
+          <div class="bg-dswdNavy text-white px-4 py-2.5 flex items-center justify-between border-b-4 border-dswdRed">
+            <div>
+              <p class="text-[9px] uppercase tracking-wider text-blue-200">Republic of the Philippines</p>
+              <p class="text-xs font-extrabold">MSWDO BOAC, MARINDUQUE</p>
+            </div>
+            <span class="bg-dswdYellow text-dswdNavy font-black text-[10px] px-2 py-0.5 rounded">RA 11861</span>
+          </div>
+          <div class="p-4 flex gap-4 items-center">
+            <div class="w-20 h-24 bg-slate-200 border border-slate-300 rounded flex flex-col items-center justify-center text-slate-400 shrink-0">
+              <i class="fa-solid fa-user text-3xl"></i>
+              <span class="text-[9px] mt-1">1x1 PHOTO</span>
+            </div>
+            <div class="text-xs space-y-1">
+              <p class="text-[10px] font-bold text-dswdRed" id="cardSpicId">SPIC-2026-001</p>
+              <p class="font-extrabold text-sm text-dswdNavy uppercase" id="cardName">NAME HERE</p>
+              <p class="text-slate-600"><span class="font-semibold">Brgy:</span> <span id="cardBrgy">Tabi</span>, Boac</p>
+              <p class="text-slate-600"><span class="font-semibold">Category:</span> <span id="cardCat">Widowed</span></p>
+              <p class="text-slate-600"><span class="font-semibold">Dependents:</span> <span id="cardDep">2</span></p>
+            </div>
+          </div>
+          <div class="bg-dswdNavy text-white text-[10px] px-4 py-1.5 flex justify-between">
+            <span>Valid Until: Dec 31, 2027</span>
+            <span class="text-dswdYellow font-semibold">OFFICIAL SOLO PARENT ID</span>
+          </div>
+        </div>
+        <button onclick="window.print()" class="mt-5 w-full bg-dswdNavy hover:bg-dswdDarkNavy text-white py-2 rounded-lg text-sm font-semibold no-print">
+          <i class="fa-solid fa-print mr-2"></i>Print SPIC Card
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
